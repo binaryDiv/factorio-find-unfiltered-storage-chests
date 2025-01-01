@@ -1,0 +1,14 @@
+# IDEs / editors
+/.idea
+/.vscode
+.*.swp
+
+# General
+/tmp
+/_tmp
+.DS_STORE
+*.tmp
+*.log
+*.bak
+*_bak
+*_bak[0-9]
