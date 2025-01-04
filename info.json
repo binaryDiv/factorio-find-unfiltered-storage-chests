@@ -1,0 +1,13 @@
+{
+    "name": "find-unfiltered-storage-chests",
+    "version": "0.0.2",
+    "title": "Find Unfiltered Storage Chests",
+    "author": "binaryDiv",
+    "contact": "factorio@binarydiv.dev",
+    "homepage": "https://github.com/binaryDiv/factorio-find-unfiltered-storage-chests",
+    "description": "Finds logistic storage chests that are not filtered to a specific item.",
+    "factorio_version": "2.0",
+    "dependencies": [
+        "base >= 2.0"
+    ]
+}
