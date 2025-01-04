@@ -8,10 +8,16 @@ script.on_init(function()
     -- entities that have a warning (so the same entites as in entities_with_warning). The keys will be integer IDs
     -- (the entity's unit_number, same as above) and the values will be LuaRenderObjects objects.
     storage.entity_warning_sprites = {}
+
+    -- Update all existing logistic containers (important when adding the mod to an existing save file)
+    update_all_logistic_containers()
 end)
 
--- TODO: on_configuration_changed - Reset state and generate new warnings?
--- TODO: Generate initial warnings on init
+-- Mod initialization (run when starting a new game or adding the mod to an existing save)
+script.on_configuration_changed(function()
+    -- Update all existing logistic containers (important when adding the mod to an existing save file)
+    update_all_logistic_containers()
+end)
 
 
 -- Define an event filter used for registering event handlers, so that we only get events for logistic containers

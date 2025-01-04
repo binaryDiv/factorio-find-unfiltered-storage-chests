@@ -1,3 +1,25 @@
+-- Updates ALL logistic containers on all surfaces by checking if they have a filter and adding/removing warnings
+function update_all_logistic_containers()
+    -- Iterate over our list of entities with warnings to check if they all still exist
+    for unit_number, entity in pairs(storage.entities_with_warning) do
+        if not entity.valid then
+            storage.entities_with_warning[unit_number] = nil
+            storage.entity_warning_sprites[unit_number].destroy()
+            storage.entity_warning_sprites[unit_number] = nil
+        end
+    end
+
+    -- Iterate over all surfaces to find logistic storage chests
+    for _, surface in pairs(game.surfaces) do
+        local logistic_containers = surface.find_entities_filtered{type = "logistic-container"}
+
+        for _, logistic_container in pairs(logistic_containers) do
+            update_logistic_container(logistic_container)
+        end
+    end
+end
+
+
 -- Update a single logistic container entity by checking if it has a filter and adding/removing warnings
 function update_logistic_container(entity)
     -- Only look at logistic containers in "storage" mode, i.e. Storage Chests or other entities added by mods that
