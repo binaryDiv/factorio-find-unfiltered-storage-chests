@@ -1,4 +1,4 @@
--- Updates ALL logistic containers on all surfaces by checking if they have a filter and adding/removing warnings
+-- Update ALL logistic containers on all surfaces by checking if they have a filter and adding/removing warnings
 function update_all_logistic_containers()
     -- Iterate over our list of entities with warnings to check if they all still exist
     for unit_number, entity in pairs(storage.entities_with_warning) do
@@ -11,14 +11,13 @@ function update_all_logistic_containers()
 
     -- Iterate over all surfaces to find logistic storage chests
     for _, surface in pairs(game.surfaces) do
-        local logistic_containers = surface.find_entities_filtered{type = "logistic-container"}
+        local logistic_containers = surface.find_entities_filtered { type = "logistic-container" }
 
         for _, logistic_container in pairs(logistic_containers) do
             update_logistic_container(logistic_container)
         end
     end
 end
-
 
 -- Update a single logistic container entity by checking if it has a filter and adding/removing warnings
 function update_logistic_container(entity)
@@ -48,7 +47,8 @@ function add_warning_to_entity(entity)
     -- Create warning sprite and save reference to remove it again later
     storage.entity_warning_sprites[entity.unit_number] = create_warning_sprite(entity)
 
-    -- TODO: Generate alerts
+    -- Generate an alert for this entity
+    generate_alert_for_entity(entity)
 end
 
 -- Remove warning for a single logistic container. This will remove both the warning sprite and the alert.
@@ -68,9 +68,8 @@ function remove_warning_from_entity(entity)
     end
 
     -- Remove alerts for this entity
-    -- TODO: Alerts not implemented yet
     for _, player in pairs(entity.force.players) do
-        player.remove_alert{entity = entity}
+        player.remove_alert { entity = entity }
     end
 end
 
@@ -78,7 +77,7 @@ end
 function create_warning_sprite(entity)
     -- TODO: Try to animate (blinking warning sprite)?
     -- TODO: Custom icon
-    return rendering.draw_sprite{
+    return rendering.draw_sprite {
         target = entity,
         surface = entity.surface,
         sprite = "utility.danger_icon",
@@ -86,4 +85,33 @@ function create_warning_sprite(entity)
         x_scale = 0.5,
         y_scale = 0.5,
     }
+end
+
+-- Generate an alert for an unfiltered storage container
+function generate_alert_for_entity(entity)
+    -- Add alert for every player of the force that owns the entity
+    for _, player in pairs(entity.force.players) do
+        player.add_custom_alert(
+            entity,
+            {
+                type = "entity",
+                name = entity.name,
+            },
+            -- TODO: Localized strings!
+            string.format(
+                "Unfiltered storage chest at (%d, %d).",
+                entity.position.x,
+                entity.position.y
+            ),
+            true
+        )
+    end
+end
+
+-- Generate alerts for all currently known unfiltered storage containers.
+-- This needs to be run frequently (on_nth_tick) because the alerts are short-lived and need to be refreshed.
+function refresh_alerts()
+    for _, entity in pairs(storage.entities_with_warning) do
+        generate_alert_for_entity(entity)
+    end
 end

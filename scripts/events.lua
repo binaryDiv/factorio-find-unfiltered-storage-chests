@@ -20,8 +20,16 @@ script.on_configuration_changed(function()
 end)
 
 
+-- Event that runs once per second to refresh the alerts
+script.on_nth_tick(60, function()
+    refresh_alerts()
+end)
+
+
 -- Define an event filter used for registering event handlers, so that we only get events for logistic containers
-local entity_event_filter = {{filter = "type", type = "logistic-container"}}
+local entity_event_filter = {
+    { filter = "type", type = "logistic-container" },
+}
 
 
 -- Events for when a storage container is built
