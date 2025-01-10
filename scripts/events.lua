@@ -4,10 +4,15 @@ script.on_init(function()
     -- unfiltered. The keys will be integer IDs (the entity's unit_number) and the values will be LuaEntity objects.
     storage.entities_with_warning = {}
 
-    -- This variable will contain references to the LuaRenderObjects of the warning sprites for all logistic container
-    -- entities that have a warning (so the same entites as in entities_with_warning). The keys will be integer IDs
-    -- (the entity's unit_number, same as above) and the values will be LuaRenderObjects objects.
-    storage.entity_warning_sprites = {}
+    -- This variable will contain all logistic container entities (with unit numbers as keys as above) that the players
+    -- marked as "acknowledged" (as in: "this chest should really be unfiltered") using the selection tool. Instead of
+    -- a warning, these entities will have a small icon in the corner to mark them as "acknowledged".
+    storage.acknowledged_entities = {}
+
+    -- This variable will contain references to the LuaRenderObjects rendered on top of logistic container entities,
+    -- either a warning icon if they are in entities_with_warning, or a small "acknowledged" icon. The keys of this
+    -- table are the entity's unit_number, like in the other tables.
+    storage.entity_icon_sprites = {}
 
     -- Update all existing logistic containers (important when adding the mod to an existing save file)
     update_all_logistic_containers()
@@ -68,7 +73,9 @@ function handle_entity_removed(event)
         return
     end
 
-    remove_warning_from_entity(event.entity)
+    -- Clear both warnings and acknowledgements for the removed item
+    clear_entity_warning(event.entity)
+    clear_entity_acknowledgement(event.entity)
 end
 
 script.on_event(defines.events.on_player_mined_entity, handle_entity_removed, entity_event_filter)

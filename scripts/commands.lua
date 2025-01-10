@@ -2,13 +2,13 @@
 commands.add_command(
     "fusc-reset",
     "Find Unfiltered Storage Chests: Reset mod state (for debugging.)",
-    function(command)
-        -- Reset storage
+    function()
+        -- Reset lists of entities
         storage.entities_with_warning = {}
-        storage.entity_warning_sprites = {}
+        storage.acknowledged_entities = {}
 
         -- Clear all render objects (warning sprites) created by this mod
-        rendering.clear(script.mod_name)
+        clear_all_sprites()
 
         game.print("[FUSC] Mod state has been reset.")
     end
@@ -18,9 +18,11 @@ commands.add_command(
 commands.add_command(
     "fusc-update",
     "Find Unfiltered Storage Chests: Update all storage containers (add/remove warnings).",
-    function(command)
+    function()
+        -- Reset the state first (without removing acknowledgements), then find and update all logistic containers
         update_all_logistic_containers()
-        game.print("[FUSC] All logistic container were updated.")
+
+        game.print("[FUSC] All logistic containers were reset and updated.")
     end
 )
 
@@ -29,15 +31,21 @@ commands.add_command(
 commands.add_command(
     "fusc-debug",
     "Find Unfiltered Storage Chests: Dump mod state (for debugging).",
-    function(command)
+    function()
         game.print("[FUSC] DUMP: storage.entities_with_warning:")
         for key, value in pairs(storage.entities_with_warning) do
             game.print("[FUSC]   - " .. serpent.line(key) .. " -> " .. serpent.line(value))
         end
 
-        game.print("[FUSC] DUMP: torage.entity_warning_sprites:")
-        for key, value in pairs(storage.entity_warning_sprites) do
+        game.print("[FUSC] DUMP: storage.acknowledged_entities:")
+        for key, value in pairs(storage.acknowledged_entities) do
             game.print("[FUSC]   - " .. serpent.line(key) .. " -> " .. serpent.line(value))
         end
+
+        game.print("[FUSC] DUMP: storage.entity_icon_sprites:")
+        for key, value in pairs(storage.entity_icon_sprites) do
+            game.print("[FUSC]   - " .. serpent.line(key) .. " -> " .. serpent.line(value))
+        end
+
     end
 )

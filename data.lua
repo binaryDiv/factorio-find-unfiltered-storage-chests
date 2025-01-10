@@ -1,3 +1,2 @@
--- TODO: Selection tool to mark unfiltered chests as intentially unfiltered
--- require("prototypes/items.lua")
--- require("prototypes/shortcuts.lua")
+require("prototypes/items.lua")
+require("prototypes/shortcuts.lua")
