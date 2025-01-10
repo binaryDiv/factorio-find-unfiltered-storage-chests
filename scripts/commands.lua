@@ -10,7 +10,7 @@ commands.add_command(
         -- Clear all render objects (warning sprites) created by this mod
         clear_all_sprites()
 
-        game.print("[FUSC] Mod state has been reset.")
+        game.print("[Find Unfiltered Storage Chests] Mod state has been reset.")
     end
 )
 
@@ -22,30 +22,30 @@ commands.add_command(
         -- Reset the state first (without removing acknowledgements), then find and update all logistic containers
         update_all_logistic_containers()
 
-        game.print("[FUSC] All logistic containers were reset and updated.")
+        game.print("[Find Unfiltered Storage Chests] All logistic containers were reset and updated.")
     end
 )
 
 -- Add a debug command to dump information about the mod's state.
--- TODO: Remove this command?
-commands.add_command(
-    "fusc-debug",
-    "Find Unfiltered Storage Chests: Dump mod state (for debugging).",
-    function()
-        game.print("[FUSC] DUMP: storage.entities_with_warning:")
-        for key, value in pairs(storage.entities_with_warning) do
-            game.print("[FUSC]   - " .. serpent.line(key) .. " -> " .. serpent.line(value))
-        end
-
-        game.print("[FUSC] DUMP: storage.acknowledged_entities:")
-        for key, value in pairs(storage.acknowledged_entities) do
-            game.print("[FUSC]   - " .. serpent.line(key) .. " -> " .. serpent.line(value))
-        end
-
-        game.print("[FUSC] DUMP: storage.entity_icon_sprites:")
-        for key, value in pairs(storage.entity_icon_sprites) do
-            game.print("[FUSC]   - " .. serpent.line(key) .. " -> " .. serpent.line(value))
-        end
-
-    end
-)
+-- (Debug tool, only uncomment when needed.)
+--commands.add_command(
+--    "fusc-debug",
+--    "Find Unfiltered Storage Chests: Dump mod state (for debugging).",
+--    function()
+--        game.print("[FUSC] DUMP: storage.entities_with_warning:")
+--        for key, value in pairs(storage.entities_with_warning) do
+--            game.print("[FUSC]   - " .. serpent.line(key) .. " -> " .. serpent.line(value))
+--        end
+--
+--        game.print("[FUSC] DUMP: storage.acknowledged_entities:")
+--        for key, value in pairs(storage.acknowledged_entities) do
+--            game.print("[FUSC]   - " .. serpent.line(key) .. " -> " .. serpent.line(value))
+--        end
+--
+--        game.print("[FUSC] DUMP: storage.entity_icon_sprites:")
+--        for key, value in pairs(storage.entity_icon_sprites) do
+--            game.print("[FUSC]   - " .. serpent.line(key) .. " -> " .. serpent.line(value))
+--        end
+--
+--    end
+--)
