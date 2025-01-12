@@ -12,8 +12,10 @@ function generate_alerts_for_entity(entity)
                 type = "virtual",
                 name = "fusc-no-filter-warning-signal",
             },
-            -- TODO: Properly localised strings!
-            { "", entity.localised_name, " has no filter." },
+            {
+                "fusc-messages.unfiltered-chest-alert",
+                entity.localised_name,
+            },
             true
         )
     end

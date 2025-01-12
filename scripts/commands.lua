@@ -1,7 +1,7 @@
 -- Add a debug command to reset the mod's state (clear storage, remove added sprites, etc).
 commands.add_command(
     "fusc-reset",
-    "Find Unfiltered Storage Chests: Reset mod state (for debugging.)",
+    "Find Unfiltered Storage Chests: Reset mod state (for debugging).",
     function()
         -- Reset lists of entities
         storage.entities_with_warning = {}
