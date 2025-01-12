@@ -14,8 +14,7 @@ data:extend({
     {
         type = "selection-tool",
         name = "fusc-acknowledge-unfiltered-chest-tool",
-        -- TODO: Replace this placeholder icon with a proper one
-        icon = "__base__/graphics/icons/storage-chest.png",
+        icon = "__find-unfiltered-storage-chests__/graphics/icons/acknowledged-icon-64.png",
         stack_size = 1,
         flags = { "only-in-cursor", "not-stackable", "spawnable" },
         hidden = true,

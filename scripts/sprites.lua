@@ -1,27 +1,36 @@
 -- Generate a warning icon sprite for an entity and return it (caller needs to save it!)
 function create_warning_icon(entity)
-    -- TODO: Try to animate (blinking warning sprite)?
-    -- TODO: Custom icon
     return rendering.draw_sprite {
         target = entity,
         surface = entity.surface,
-        sprite = "utility.danger_icon",
+        sprite = "fusc-no-filter-warning-icon",
         render_layer = "entity-info-icon-above",
-        x_scale = 0.5,
-        y_scale = 0.5,
     }
 end
 
 -- Generate an acknowledged icon sprite for an entity and return it (caller needs to save it!)
 function create_acknowledged_icon(entity)
-    -- TODO: Custom icon
+    -- Offset to move the acknowledged icon into the bottom-left corner of the entity
+    local offset_x = -0.25
+    local offset_y = 0.25
+
+    -- For containers larger than 1 tile, it looks better to slightly move the icon further away from the corner, so
+    -- we center the icon on the bottom-left tile instead of cramming it into the corner.
+    if entity.tile_width > 1 then
+        offset_x = -entity.tile_width / 2 + 0.5
+    end
+    if entity.tile_height > 1 then
+        offset_y = entity.tile_height / 2 - 0.5
+    end
+
     return rendering.draw_sprite {
-        target = entity,
+        target = {
+            entity = entity,
+            offset = { offset_x, offset_y },
+        },
         surface = entity.surface,
-        sprite = "utility.check_mark_green",
+        sprite = "fusc-acknowledged-icon",
         render_layer = "entity-info-icon-above",
-        x_scale = 1,
-        y_scale = 1,
     }
 end
 
