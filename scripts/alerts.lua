@@ -1,5 +1,9 @@
 -- Generate an alert for an unfiltered storage container
 function generate_alerts_for_entity(entity)
+    if not entity.valid then
+        return
+    end
+
     -- Add alert for every player of the force that owns the entity
     for _, player in pairs(entity.force.players) do
         player.add_custom_alert(
@@ -21,6 +25,10 @@ end
 
 -- Remove alerts for an entity for all players
 function remove_alerts_for_entity(entity)
+    if not entity.valid then
+        return
+    end
+
     for _, player in pairs(entity.force.players) do
         player.remove_alert { entity = entity }
     end
