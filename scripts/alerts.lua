@@ -9,15 +9,11 @@ function generate_alerts_for_entity(entity)
         player.add_custom_alert(
             entity,
             {
-                type = "entity",
-                name = entity.name,
+                type = "virtual",
+                name = "fusc-no-filter-warning-signal",
             },
-            -- TODO: Localized strings!
-            string.format(
-                "Unfiltered storage chest at (%d, %d).",
-                entity.position.x,
-                entity.position.y
-            ),
+            -- TODO: Properly localised strings!
+            { "", entity.localised_name, " has no filter." },
             true
         )
     end
