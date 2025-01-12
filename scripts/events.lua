@@ -20,6 +20,17 @@ end)
 
 -- Mod initialization (run when starting a new game or adding the mod to an existing save)
 script.on_configuration_changed(function()
+    -- Create storage variables that don't exist yet
+    if storage.entities_with_warning == nil then
+        storage.entities_with_warning = {}
+    end
+    if storage.acknowledged_entities == nil then
+        storage.acknowledged_entities = {}
+    end
+    if storage.entity_icon_sprites == nil then
+        storage.entity_icon_sprites = {}
+    end
+
     -- Update all existing logistic containers (important when adding the mod to an existing save file)
     update_all_logistic_containers()
 end)
