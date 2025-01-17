@@ -95,4 +95,52 @@ script.on_event(defines.events.on_space_platform_mined_entity, handle_entity_rem
 script.on_event(defines.events.on_entity_died, handle_entity_removed, entity_event_filter)
 script.on_event(defines.events.script_raised_destroy, handle_entity_removed, entity_event_filter)
 
--- TODO: Do we want warnings on ghosts as well?
+
+-- Events when settings are copy and pasted from one storage container to another
+function handle_entity_settings_pasted(event)
+    -- We can't use event filters here, so let's see if this event is relevant to us
+    if not entity_is_storage_container(event.source) or not entity_is_storage_container(event.destination) then
+        return
+    end
+
+    -- If the destination entity is unfiltered (now) and the source entity is acknowledged, copy the acknowledgement.
+    -- Otherwise, unset any existing acknowledgement.
+    if event.destination.storage_filter == nil and entity_is_acknowledged(event.source) then
+        entity_set_is_acknowledged(event.destination)
+    else
+        entity_unset_is_acknowledged(event.destination)
+    end
+
+    -- Update destination entity to apply warning or acknowledgement icons
+    update_logistic_container(event.destination)
+end
+
+script.on_event(defines.events.on_entity_settings_pasted, handle_entity_settings_pasted)
+
+
+-- Events for undo/redo actions: Update storage containers if undo/redo changed their filter
+function handle_undo_or_redo_applied(event)
+    -- Finding out whether the undo/redo action affected a storage container, and if yes, *which* storage container,
+    -- is quite annoying and partially impossible with what the API offers. So this is going to be a bit ugly.
+    for _, undo_redo_action in pairs(event.actions) do
+        if undo_redo_action.type == 'copy-entity-settings' then
+            -- Determine the type of the entity
+            local target = undo_redo_action.target
+            local target_prototype = prototypes.entity[target.name]
+
+            if target_prototype.type == "logistic-container" and target_prototype.logistic_mode == "storage" then
+                -- The UndoRedoAction only gives us the map position of the entity, but not the surface. So we have
+                -- to check the map position on *every* surface for potential storage containers and update them. UGH.
+                for _, surface in pairs(game.surfaces) do
+                    local entity = surface.find_entity(target.name, target.position)
+                    if entity ~= nil then
+                        update_logistic_container(entity)
+                    end
+                end
+            end
+        end
+    end
+end
+
+script.on_event(defines.events.on_undo_applied, handle_undo_or_redo_applied)
+script.on_event(defines.events.on_redo_applied, handle_undo_or_redo_applied)
