@@ -1,3 +1,6 @@
+-- Helper functions
+require("scripts/helpers.lua")
+
 -- Event handlers
 require("scripts/events.lua")
 

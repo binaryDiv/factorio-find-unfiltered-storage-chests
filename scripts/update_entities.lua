@@ -29,15 +29,15 @@ end
 function update_logistic_container(entity)
     -- Only look at logistic containers in "storage" mode, i.e. Storage Chests or other entities added by mods that
     -- behave like Storage Chests.
-    if entity.type ~= "logistic-container" or entity.prototype.logistic_mode ~= "storage" then
+    if not entity_is_storage_container(entity) then
         return
     end
 
-    if entity.storage_filter == nil and storage.acknowledged_entities[entity.unit_number] == nil then
+    if entity.storage_filter == nil and not entity_is_acknowledged(entity) then
         -- Container is unfiltered and not acknowledged: Render warning icon, generate alert
         -- (If the entity has an acknowledged icon, it will be automatically removed)
         add_warning_to_entity(entity)
-    elseif entity.storage_filter == nil and storage.acknowledged_entities[entity.unit_number] ~= nil then
+    elseif entity.storage_filter == nil and entity_is_acknowledged(entity) then
         -- Container is unfiltered and acknowledged: Remove warning, render acknowledged icon
         clear_entity_warning(entity)
         add_acknowledgement_icon_to_entity(entity)
@@ -50,21 +50,19 @@ end
 
 -- Add warning to a single logistic container (automatically replaces "acknowledged" icon with warning sprite).
 function add_warning_to_entity(entity)
-    local unit_number = entity.unit_number
-
     -- Check if entity already has warning
-    if storage.entities_with_warning[unit_number] ~= nil then
+    if entity_has_warning(entity) then
         return
     end
 
     -- Add entity to list to generate and refresh alerts later
-    storage.entities_with_warning[unit_number] = entity
+    entity_set_has_warning(entity)
 
     -- Remove existing icon sprite if the entity has one (e.g. if it has an "acknowledged" icon)
     clear_entity_icon_sprite(entity)
 
     -- Create warning icon sprite and save reference to remove it again later
-    storage.entity_icon_sprites[unit_number] = create_warning_icon(entity)
+    storage.entity_icon_sprites[entity.unit_number] = create_warning_icon(entity)
 
     -- Generate an alert for this entity
     generate_alerts_for_entity(entity)
@@ -82,7 +80,7 @@ end
 -- Remove warning for a single logistic container. This will remove both the warning sprite and the alert.
 function clear_entity_warning(entity)
     -- Remove entity from list
-    storage.entities_with_warning[entity.unit_number] = nil
+    entity_unset_has_warning(entity)
 
     -- Remove warning sprite and alerts
     clear_entity_icon_sprite(entity)
@@ -92,7 +90,7 @@ end
 -- Remove acknowledgement icon from a container and remove it from the list of acknowledged entities.
 function clear_entity_acknowledgement(entity)
     -- Remove entity from list
-    storage.acknowledged_entities[entity.unit_number] = nil
+    entity_unset_is_acknowledged(entity)
 
     -- Remove acknowledged icon sprite
     clear_entity_icon_sprite(entity)

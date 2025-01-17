@@ -51,7 +51,7 @@ local entity_event_filter = {
 -- Events for when a storage container is built
 function handle_entity_built(event)
     -- We only care about storage containers
-    if event.entity.prototype.logistic_mode ~= "storage" then
+    if not entity_is_storage_container(event.entity) then
         return
     end
 
@@ -67,7 +67,7 @@ script.on_event(defines.events.script_raised_built, handle_entity_built, entity_
 -- Events for when the filter of a storage container is modified
 function handle_entity_logistic_slot_changed(event)
     -- We can't use event filters here, so let's see if this event is relevant to us
-    if event.entity.type ~= "logistic-container" or event.entity.prototype.logistic_mode ~= "storage" then
+    if not entity_is_storage_container(event.entity) then
         return
     end
 
@@ -80,7 +80,7 @@ script.on_event(defines.events.on_entity_logistic_slot_changed, handle_entity_lo
 -- Events for when a storage container is removed
 function handle_entity_removed(event)
     -- We only care about storage containers
-    if event.entity.prototype.logistic_mode ~= "storage" then
+    if not entity_is_storage_container(event.entity) then
         return
     end
 
