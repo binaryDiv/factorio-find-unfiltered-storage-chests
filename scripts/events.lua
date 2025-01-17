@@ -48,11 +48,17 @@ local entity_event_filter = {
 }
 
 
--- Events for when a storage container is built
+-- Events that are called when a storage container is built (e.g. by a player, bots or a script)
 function handle_entity_built(event)
     -- We only care about storage containers
     if not entity_is_storage_container(event.entity) then
         return
+    end
+
+    -- When building a storage container from a ghost, check if it should be acknowledged as unfiltered (e.g. when an
+    -- acknowledged unfiltered container was blueprinted or copied)
+    if event.tags ~= nil and event.tags[ENTITY_TAG_ACKNOWLEDGE_UNFILTERED] == true then
+        entity_set_is_acknowledged(event.entity)
     end
 
     update_logistic_container(event.entity)
@@ -62,9 +68,10 @@ script.on_event(defines.events.on_built_entity, handle_entity_built, entity_even
 script.on_event(defines.events.on_robot_built_entity, handle_entity_built, entity_event_filter)
 script.on_event(defines.events.on_space_platform_built_entity, handle_entity_built, entity_event_filter)
 script.on_event(defines.events.script_raised_built, handle_entity_built, entity_event_filter)
+script.on_event(defines.events.script_raised_revive, handle_entity_built, entity_event_filter)
 
 
--- Events for when the filter of a storage container is modified
+-- Event that is called when the filter of a storage container is modified
 function handle_entity_logistic_slot_changed(event)
     -- We can't use event filters here, so let's see if this event is relevant to us
     if not entity_is_storage_container(event.entity) then
@@ -77,7 +84,7 @@ end
 script.on_event(defines.events.on_entity_logistic_slot_changed, handle_entity_logistic_slot_changed)
 
 
--- Events for when a storage container is removed
+-- Events that are called when a storage container is removed (e.g. by a player, bots or a script)
 function handle_entity_removed(event)
     -- We only care about storage containers
     if not entity_is_storage_container(event.entity) then
@@ -92,11 +99,36 @@ end
 script.on_event(defines.events.on_player_mined_entity, handle_entity_removed, entity_event_filter)
 script.on_event(defines.events.on_robot_mined_entity, handle_entity_removed, entity_event_filter)
 script.on_event(defines.events.on_space_platform_mined_entity, handle_entity_removed, entity_event_filter)
-script.on_event(defines.events.on_entity_died, handle_entity_removed, entity_event_filter)
 script.on_event(defines.events.script_raised_destroy, handle_entity_removed, entity_event_filter)
 
 
--- Events for when a storage container is cloned using the map editor
+-- Event that is called when a storage container dies, i.e. destroyed by damage. If the entity was acknowledged, the
+-- automatically generated ghost should get a tag so that the entity is acknowledged again after being revived.
+function handle_post_entity_died(event)
+    -- We only care about storage containers
+    if not prototype_is_storage_container(event.prototype) then
+        return
+    end
+
+    local unit_number = event.unit_number
+
+    -- If a ghost was created, check if the original container was acknowledged and set a tag on the ghost
+    if event.ghost ~= nil and storage.acknowledged_entities[unit_number] ~= nil then
+        local tags = event.ghost.tags or {}
+        tags[ENTITY_TAG_ACKNOWLEDGE_UNFILTERED] = true
+        event.ghost.tags = tags
+    end
+
+    -- Clean up data about the destroyed entity
+    storage.entities_with_warning[unit_number] = nil
+    storage.acknowledged_entities[unit_number] = nil
+    storage.entity_icon_sprites[unit_number] = nil
+end
+
+script.on_event(defines.events.on_post_entity_died, handle_post_entity_died, entity_event_filter)
+
+
+-- Event that is called when a storage container is cloned using the map editor
 function handle_entity_cloned(event)
     -- We only care about storage containers
     if not entity_is_storage_container(event.source) or not entity_is_storage_container(event.destination) then
@@ -114,7 +146,7 @@ end
 script.on_event(defines.events.on_entity_cloned, handle_entity_cloned, entity_event_filter)
 
 
--- Events when settings are copy and pasted from one storage container to another
+-- Event that is called when settings are copy and pasted from one storage container to another
 function handle_entity_settings_pasted(event)
     -- We can't use event filters here, so let's see if this event is relevant to us
     if not entity_is_storage_container(event.source) or not entity_is_storage_container(event.destination) then
@@ -141,12 +173,12 @@ function handle_undo_or_redo_applied(event)
     -- Finding out whether the undo/redo action affected a storage container, and if yes, *which* storage container,
     -- is quite annoying and partially impossible with what the API offers. So this is going to be a bit ugly.
     for _, undo_redo_action in pairs(event.actions) do
-        if undo_redo_action.type == 'copy-entity-settings' then
+        if undo_redo_action.type == "copy-entity-settings" then
             -- Determine the type of the entity
             local target = undo_redo_action.target
             local target_prototype = prototypes.entity[target.name]
 
-            if target_prototype.type == "logistic-container" and target_prototype.logistic_mode == "storage" then
+            if prototype_is_storage_container(target_prototype) then
                 -- The UndoRedoAction only gives us the map position of the entity, but not the surface. So we have
                 -- to check the map position on *every* surface for potential storage containers and update them. UGH.
                 for _, surface in pairs(game.surfaces) do
@@ -162,3 +194,24 @@ end
 
 script.on_event(defines.events.on_undo_applied, handle_undo_or_redo_applied)
 script.on_event(defines.events.on_redo_applied, handle_undo_or_redo_applied)
+
+
+-- Event that is called when the player creates a blueprint (using a blueprint item or copying with Ctrl-C)
+function handle_setup_blueprint(event)
+    local blueprint = event.stack
+
+    if blueprint == nil or not blueprint.is_blueprint then
+        return
+    end
+
+    -- Find all storage containers that are part of the blueprint
+    for entity_index, source_entity in pairs(event.mapping.get()) do
+        -- If the storage container is an acknowledged unfiltered chest, set a tag on the ghost which will be read by
+        -- handle_entity_built to determine whether the built container should be acknowledged too.
+        if entity_is_storage_container(source_entity) and entity_is_acknowledged(source_entity) then
+            blueprint.set_blueprint_entity_tag(entity_index, ENTITY_TAG_ACKNOWLEDGE_UNFILTERED, true)
+        end
+    end
+end
+
+script.on_event(defines.events.on_player_setup_blueprint, handle_setup_blueprint)

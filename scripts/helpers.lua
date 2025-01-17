@@ -3,6 +3,11 @@ function entity_is_storage_container(entity)
     return entity.type == "logistic-container" and entity.prototype.logistic_mode == "storage"
 end
 
+-- Returns true if a prototype is a logistic container in storage mode (e.g. a Storage Chest)
+function prototype_is_storage_container(prototype)
+    return prototype.type == "logistic-container" and prototype.logistic_mode == "storage"
+end
+
 -- Returns true if an entity has a warning (checks storage variable)
 function entity_has_warning(entity)
     return storage.entities_with_warning[entity.unit_number] ~= nil

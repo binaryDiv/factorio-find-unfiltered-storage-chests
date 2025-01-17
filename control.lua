@@ -1,3 +1,6 @@
+-- Constants
+require("scripts/constants.lua")
+
 -- Helper functions
 require("scripts/helpers.lua")
 
