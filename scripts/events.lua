@@ -96,6 +96,24 @@ script.on_event(defines.events.on_entity_died, handle_entity_removed, entity_eve
 script.on_event(defines.events.script_raised_destroy, handle_entity_removed, entity_event_filter)
 
 
+-- Events for when a storage container is cloned using the map editor
+function handle_entity_cloned(event)
+    -- We only care about storage containers
+    if not entity_is_storage_container(event.source) or not entity_is_storage_container(event.destination) then
+        return
+    end
+
+    -- If the source entity is acknowledged, copy the acknowledgement onto the cloned entity
+    if entity_is_acknowledged(event.source) then
+        entity_set_is_acknowledged(event.destination)
+    end
+
+    update_logistic_container(event.destination)
+end
+
+script.on_event(defines.events.on_entity_cloned, handle_entity_cloned, entity_event_filter)
+
+
 -- Events when settings are copy and pasted from one storage container to another
 function handle_entity_settings_pasted(event)
     -- We can't use event filters here, so let's see if this event is relevant to us
