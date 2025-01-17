@@ -5,16 +5,18 @@ local function handle_player_selected_area(event)
     end
 
     for _, entity in pairs(event.entities) do
-        if event.name == defines.events.on_player_alt_selected_area then
-            unacknowledge_unfiltered_container(entity)
-        else
+        if event.name == defines.events.on_player_selected_area then
             acknowledge_unfiltered_container(entity)
+        else
+            unacknowledge_unfiltered_container(entity)
         end
     end
 end
 
 script.on_event(defines.events.on_player_selected_area, handle_player_selected_area)
 script.on_event(defines.events.on_player_alt_selected_area, handle_player_selected_area)
+script.on_event(defines.events.on_player_reverse_selected_area, handle_player_selected_area)
+script.on_event(defines.events.on_player_alt_reverse_selected_area, handle_player_selected_area)
 
 
 -- Acknowledges an unfiltered storage container (checks if it actually is unfiltered first)
