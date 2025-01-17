@@ -18,6 +18,7 @@ script.on_init(function()
     update_all_logistic_containers()
 end)
 
+
 -- Mod initialization (run when starting a new game or adding the mod to an existing save)
 script.on_configuration_changed(function()
     -- Create storage variables that don't exist yet
@@ -33,6 +34,22 @@ script.on_configuration_changed(function()
 
     -- Update all existing logistic containers (important when adding the mod to an existing save file)
     update_all_logistic_containers()
+end)
+
+
+-- Event that is called when a runtime setting is changed
+script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
+    if event.setting == "fusc-generate-alerts-for-unfiltered-chests" then
+        if get_player_setting_generate_alerts(event.player_index) then
+            -- Setting is enabled: Generate alerts (for simplicity, alerts for all users are refreshed)
+            refresh_alerts()
+        else
+            -- Setting is disabled: Clear all alerts, then refresh alerts (for simplicity, will remove the alerts for
+            -- all players including the one that disabled the setting, then generate alerts for all others)
+            clear_all_alerts()
+            refresh_alerts()
+        end
+    end
 end)
 
 

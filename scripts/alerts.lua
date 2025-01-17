@@ -6,18 +6,20 @@ function generate_alerts_for_entity(entity)
 
     -- Add alert for every player of the force that owns the entity
     for _, player in pairs(entity.force.players) do
-        player.add_custom_alert(
-            entity,
-            {
-                type = "virtual",
-                name = "fusc-no-filter-warning-signal",
-            },
-            {
-                "fusc-messages.unfiltered-chest-alert",
-                entity.localised_name,
-            },
-            true
-        )
+        if get_player_setting_generate_alerts(player) then
+            player.add_custom_alert(
+                entity,
+                {
+                    type = "virtual",
+                    name = "fusc-no-filter-warning-signal",
+                },
+                {
+                    "fusc-messages.unfiltered-chest-alert",
+                    entity.localised_name,
+                },
+                true
+            )
+        end
     end
 end
 

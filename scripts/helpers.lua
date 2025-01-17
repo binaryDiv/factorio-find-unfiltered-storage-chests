@@ -37,3 +37,10 @@ end
 function entity_unset_is_acknowledged(entity)
     storage.acknowledged_entities[entity.unit_number] = nil
 end
+
+-- Checks the player settings: Returns true if alerts should be generated for the given player
+function get_player_setting_generate_alerts(player)
+    local player_settings = settings.get_player_settings(player)
+    local setting = player_settings.valid and player_settings["fusc-generate-alerts-for-unfiltered-chests"]
+    return setting and setting.value == true
+end
