@@ -1,0 +1,7 @@
+# IDEs / editors
+/.idea
+/.vscode
+
+# General
+/tmp
+/_tmp

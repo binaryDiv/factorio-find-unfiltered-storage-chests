@@ -1,0 +1,31 @@
+# GitHub Actions workflow to publish a new release of the mod by creating a release tag.
+name: Publish mod release
+
+# Only run on for published releases
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate mod metadata
+        uses: TheBrutalX/factorio-mod-uploader-action@v2
+        with:
+          action: validate
+
+      - name: Package mod into zip file
+        uses: TheBrutalX/factorio-mod-uploader-action@v2
+        with:
+          action: compress
+
+      - name: Upload mod to Factorio mod portal
+        uses: TheBrutalX/factorio-mod-uploader-action@v2
+        with:
+          action: upload
+          factorio-api-key: ${{ secrets.FACTORIO_API_KEY }}
