@@ -1,0 +1,10 @@
+---------------------------------------------------------------------------------------------------
+Version: 0.1.0
+Date: 18. 01. 2025
+  Major Features:
+    - Initial release.
+    - Implemented warning icons and alerts for unfiltered storage chests.
+    - Added a selection tool to acknowledge unfiltered storage chests and remove the warnings.
+  Translation:
+    - Added English translation.
+    - Added German translation.
