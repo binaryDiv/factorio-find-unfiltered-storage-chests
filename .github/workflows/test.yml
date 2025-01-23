@@ -1,8 +1,8 @@
 # GitHub Actions workflow to run a test build without uploading the mod to the mod portal.
 name: Run test build
 
-# Run when any branch is pushed
-on: push
+# Only run when triggered manually
+on: workflow_dispatch
 
 jobs:
   test:
