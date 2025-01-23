@@ -1,0 +1,30 @@
+# GitHub Actions workflow to run a test build without uploading the mod to the mod portal.
+name: Run test build
+
+# Run when any branch is pushed
+on: push
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate mod metadata
+        uses: TheBrutalX/factorio-mod-uploader-action@v2
+        with:
+          action: validate
+
+      - name: Package mod into zip file
+        uses: TheBrutalX/factorio-mod-uploader-action@v2
+        if: success() || failure()
+        with:
+          action: compress
+
+      - name: Upload zip file as build artifact
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
+        with:
+          name: mod_package
+          path: ${{ env.ZIP_FILE }}
