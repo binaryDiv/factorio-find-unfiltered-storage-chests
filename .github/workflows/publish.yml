@@ -9,7 +9,7 @@ on:
 
 jobs:
   publish:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,6 +23,13 @@ jobs:
         uses: TheBrutalX/factorio-mod-uploader-action@v2
         with:
           action: compress
+
+      - name: Upload zip file as build artifact
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
+        with:
+          name: mod_package
+          path: ${{ env.ZIP_FILE }}
 
       - name: Upload mod to Factorio mod portal
         uses: TheBrutalX/factorio-mod-uploader-action@v2
