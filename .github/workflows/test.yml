@@ -18,13 +18,11 @@ jobs:
 
       - name: Package mod into zip file
         uses: TheBrutalX/factorio-mod-uploader-action@v2
-        if: success() || failure()
         with:
           action: compress
 
       - name: Upload zip file as build artifact
         uses: actions/upload-artifact@v4
-        if: success() || failure()
         with:
           name: mod_package
           path: ${{ env.ZIP_FILE }}
