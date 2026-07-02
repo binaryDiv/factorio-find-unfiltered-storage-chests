@@ -1,4 +1,4 @@
--- Mod initialization (run when starting a new game or adding the mod to an existing save)
+-- Mod initialization (called when starting a new game or adding the mod to an existing save)
 script.on_init(function()
     -- This variable will hold references to all logistic container entities that currently have a warning about being
     -- unfiltered. The keys will be integer IDs (the entity's unit_number) and the values will be LuaEntity objects.
@@ -19,7 +19,8 @@ script.on_init(function()
 end)
 
 
--- Mod initialization (run when starting a new game or adding the mod to an existing save)
+-- Event that is called when the game's configuration has changed, which includes: Startup mod settings were changed,
+-- the game was updated, any mod was added, removed or updated.
 script.on_configuration_changed(function()
     -- Create storage variables that don't exist yet
     if storage.entities_with_warning == nil then
@@ -189,16 +190,15 @@ script.on_event(defines.events.on_entity_settings_pasted, handle_entity_settings
 function handle_undo_or_redo_applied(event)
     -- Finding out whether the undo/redo action affected a storage container, and if yes, *which* storage container,
     -- is quite annoying and partially impossible with what the API offers. So this is going to be a bit ugly.
-    for _, undo_redo_action in pairs(event.actions) do
-        if undo_redo_action.type == "copy-entity-settings" then
+    for _, action in pairs(event.actions) do
+        if action.type == "copy-entity-settings" and action.target and action.surface_index then
             -- Determine the type of the entity
-            local target = undo_redo_action.target
+            local target = action.target
             local target_prototype = prototypes.entity[target.name]
 
             if prototype_is_storage_container(target_prototype) then
-                -- The UndoRedoAction only gives us the map position of the entity, but not the surface. So we have
-                -- to check the map position on *every* surface for potential storage containers and update them. UGH.
-                for _, surface in pairs(game.surfaces) do
+                local surface = game.surfaces[action.surface_index]
+                if surface ~= nil then
                     local entity = surface.find_entity(target.name, target.position)
                     if entity ~= nil then
                         update_logistic_container(entity)

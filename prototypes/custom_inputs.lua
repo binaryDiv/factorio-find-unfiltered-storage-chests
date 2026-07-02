@@ -1,4 +1,4 @@
--- Create a custom keybinding to get the selection tool to acknowledge unfiltered chests
+-- Create a custom keyboard shortcut to get the selection tool to acknowledge unfiltered chests
 data:extend({
     {
         type = "custom-input",
