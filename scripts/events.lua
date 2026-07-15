@@ -77,6 +77,9 @@ function handle_entity_built(event)
     -- acknowledged unfiltered container was blueprinted or copied)
     if event.tags ~= nil and event.tags[ENTITY_TAG_ACKNOWLEDGE_UNFILTERED] == true then
         entity_set_is_acknowledged(event.entity)
+    elseif event.name == defines.events.on_blueprint_settings_pasted then
+        -- Unacknowledge an acknowledged chest by pasting over it with a blueprint of an unacknowledged chest.
+        entity_unset_is_acknowledged(event.entity)
     end
 
     update_logistic_container(event.entity)
@@ -85,6 +88,7 @@ end
 script.on_event(defines.events.on_built_entity, handle_entity_built, entity_event_filter)
 script.on_event(defines.events.on_robot_built_entity, handle_entity_built, entity_event_filter)
 script.on_event(defines.events.on_space_platform_built_entity, handle_entity_built, entity_event_filter)
+script.on_event(defines.events.on_blueprint_settings_pasted, handle_entity_built)
 script.on_event(defines.events.script_raised_built, handle_entity_built, entity_event_filter)
 script.on_event(defines.events.script_raised_revive, handle_entity_built, entity_event_filter)
 
