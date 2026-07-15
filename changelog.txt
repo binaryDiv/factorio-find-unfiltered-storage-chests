@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.0.0
+Date: 15. 07. 2025
+  Features:
+    - Placing storage chest blueprints on existing storage chests will now properly set/reset the acknowledge flag. Undo/redo is still a bit janky though.
+  Optimizations:
+    - When handling undo/redo actions, use surface index from UndoRedoAction instead of iterating over all surfaces.
+  Changes:
+    - Updated for Factorio 2.1.
+---------------------------------------------------------------------------------------------------
 Version: 0.1.0
 Date: 18. 01. 2025
   Major Features:

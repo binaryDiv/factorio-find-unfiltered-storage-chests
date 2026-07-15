@@ -12,12 +12,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Validate mod metadata
-        uses: TheBrutalX/factorio-mod-uploader-action@v2
+        uses: TheBrutalX/factorio-mod-uploader-action@v2.0.4
         with:
           action: validate
 
       - name: Package mod into zip file
-        uses: TheBrutalX/factorio-mod-uploader-action@v2
+        uses: TheBrutalX/factorio-mod-uploader-action@v2.0.4
         with:
           action: compress
 
